@@ -1,49 +1,75 @@
-/*
+/*ORGINAL
  *Name: guess.c
  *Purpose: guess the number in specified chances
  *Author: Amy
  *Date: 2024.7.9
 */
 
+/*DEVELOPING*/
+
 #include<stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include<stdlib.h>
+#include<time.h>
+#include<stdbool.h>
+#include<windows.system.h>
 
 int main() {
-    //1.generate a random number under the limitation
-    srand(time(NULL)); //use current time as seed for random generator
-    int answer = rand() % 100;
-    int chance = 7;
-    printf("Random answer on [0,100]: %d\n",answer);
+    const int default_chance_time = 7;
+    int hardness_level = 0, reward_num = -1,
+        usr_guess = -1, chance = default_chance_time;
+    bool is_guess_right = false;
 
-    //2.read the input from the keyboard
-    int guess;
-    int is_right = 0;
-    
-    do {
-        printf("[%d]Please input your guess:\n", chance);
-        scanf("%d", &guess);        
-        chance --;
-        //3.compare the guess with the answer, giving related prompt arrcoding to the comparing result
-        if (guess == answer) {
-            is_right = 1;
-            printf("Great! You hit the correct number!\n");
+    for(;;) {
+        printf("\t\t\thardness\n"
+            "1:one-digit\n2:two-digit\n3:three-digit\n4:exit"
+            "\n(Type number option to choose ...)\n");
+        scanf("%d", &hardness_level);
+        /*Must input number here
+        + program crupt otherwise*/
+        srand(time(NULL));
+        switch(hardness_level) {
+        default:
+            printf("Error code, default code actived\n");
+            /*default code is 1*/
+            /*Fall through*/
+        case 1:
+            printf("hardness: 1 [0,9]\n");
+            reward_num = rand() % 10;
             break;
+        case 2:
+            printf("hardess: 2 [10,99]\n");
+            reward_num = 10 + rand() % 90;
+            break;
+        case 3:
+            printf("hardness: 3 [100,999]\n");
+            reward_num = 100 + rand() % 900;
+            break;
+        case 4:
+            return 0;
         }
-        else if (answer > guess)
-                printf("Bigger than this.\n");
-            else
-                printf("Smaller than this.\n");
+        do {
+            printf("[chance left:%d]\tyour guess:\n", chance);
+            scanf("%d", &usr_guess);        
+            chance --;
+            if (usr_guess == reward_num) {
+                is_guess_right = true;
+                printf("bingo!\n");
+                break;
+            }
+            else if ( reward_num > usr_guess)
+                    printf("> %d\n", usr_guess);
+                else
+                    printf("< %d\n", usr_guess);
         } while (chance > 0);
-
-    //4.repeate procedure 2 and 3 until hit the answer or the chances
-    if (is_right == 0)
-        printf("Sorry, you lose the game this time!\n");
-
-    int window_holder;
-
-    printf("Press any key to end!\n");
-    window_holder = scanf("%d", &window_holder);
+        if (is_guess_right == false)
+        printf("losed...\n");
+        hardness_level = 0; usr_guess = -1;
+        reward_num = -1; chance = default_chance_time;
+        is_guess_right = false;
+        printf("Ready to back the menu...\n");
+        system("pause");
+    }
     
+
     return 0;
 }
